@@ -71,7 +71,7 @@ shpTypeFromId i =
             25 -> ShpPolygonM
             28 -> ShpMultiPointM
             31 -> ShpMultiPatch
-            _  -> error "shpTypeFromId: Unknown Shape Type"
+            e -> error $ "shpTypeFromId: Unknown Shape Type" ++ (show e)
 
 data ShpBBox =
   ShpBBox {
