@@ -9,8 +9,6 @@ import qualified Data.Conduit.Attoparsec as CA
 
 import Data.Dbase.Parser
 
--- main = getArgs >>= mapM_ (\fp -> runResourceT $ CB.sourceFile fp =$= dbfConduit $$ CC.mapM_ (liftIO . putStrLn . ppShow))
-
 dbfConduit :: ConduitM ByteString (CA.PositionRange, DbfRow) (ResourceT IO) ()
 dbfConduit = do
    hdr <- CA.sinkParser parseDbfHeader
