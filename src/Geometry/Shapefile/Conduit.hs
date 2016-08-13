@@ -8,7 +8,6 @@ import Data.Conduit.Decoder
 import Geometry.Shapefile.ReadShp
 import Geometry.Shapefile
 import Control.Monad.Trans.Resource
-import Control.Monad.IO.Class
 
 shapefileConduit :: Conduit ByteString (ResourceT IO) ShpRec
 shapefileConduit = do
