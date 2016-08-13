@@ -3,6 +3,7 @@ extra-package-dbs: []
 packages:
 - '.'
 - 'decoder-conduit'
+- 'readshp-0.1.0.0'
 extra-deps:
 - attoparsec-binary-0.2
 resolver: lts-6.11
