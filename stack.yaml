@@ -2,6 +2,7 @@ flags: {}
 extra-package-dbs: []
 packages:
 - '.'
+- 'decoder-conduit'
 extra-deps:
 - attoparsec-binary-0.2
 resolver: lts-6.11
