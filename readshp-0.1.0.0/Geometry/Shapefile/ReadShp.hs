@@ -7,6 +7,8 @@ Author      : Sam van Herwaarden <samvherwaarden@gmail.com>
 
 module Geometry.Shapefile.ReadShp ( readShpFile,
                                     readShpData,
+                                    getShpHeader,
+                                    getShpRec,
                                   ) where
 
 import Control.Monad       ( replicateM, when )
