@@ -10,7 +10,7 @@ import qualified Data.Conduit.Attoparsec as CA
 import Data.Dbase.Parser
 
 dbfConduit :: ConduitM ByteString (CA.PositionRange, DbfRow) (ResourceT IO) ()
-dbfConduit = do
-   hdr <- CA.sinkParser parseDbfHeader
-   columns <- CA.sinkParser $ parseDbfColumns hdr
-   CA.conduitParser $ parseDbfRow columns
+dbfConduit = 
+   CA.sinkParser parseDbfHeader >>= 
+   CA.sinkParser . parseDbfColumns >>= 
+   CA.conduitParser . parseDbfRow
