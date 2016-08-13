@@ -1,5 +1,5 @@
 name:                readshp
-version:             0.1.0.0
+version:             0.1.1.0
 synopsis:            Code for reading ESRI Shapefiles.
 description:         Provides code for binary parsing of ESRI shapefiles,
                      where the .shp and the .dbf file are read. The code has
@@ -10,8 +10,8 @@ description:         Provides code for binary parsing of ESRI shapefiles,
                      ByteString).
 license:             MIT
 license-file:        LICENSE
-author:              Sam van Herwaarden
-maintainer:          samvherwaarden@gmail.com
+author:              Sam van Herwaarden [forked by Tristan]
+maintainer:          cassowary@fastmail.fm
 category:            GIS
 build-type:          Simple
 cabal-version:       >=1.10
@@ -30,4 +30,4 @@ library
                        filepath,
                        monad-loops
   default-language:    Haskell2010
-  ghc-options:         -Wall -fno-warn-unused-do-bind
+  ghc-options:         -Wall
