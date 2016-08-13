@@ -3,7 +3,7 @@ where
 
 import Data.Attoparsec.ByteString hiding (parseTest)
 import qualified Data.ByteString as BS
-import Data.Shapefile.Parser
+import Data.Dbase.Parser
 import System.Environment
 import Text.Show.Pretty
 

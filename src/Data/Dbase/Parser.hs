@@ -1,4 +1,4 @@
-module Data.Shapefile.Parser (
+module Data.Dbase.Parser (
    parseDbf, 
    Dbf (..), 
    DbfColumn (..), 

@@ -19,7 +19,7 @@ cabal-version:       >=1.10
 library
   ghc-options: -Wall
   default-extensions: OverloadedStrings
-  exposed-modules:     Data.Shapefile.Parser, Data.Shapefile.Conduit
+  exposed-modules:     Data.Dbase.Parser, Data.Dbase.Conduit
   -- other-modules:       
   -- other-extensions:    
   build-depends:       base >=4.8 && <4.9,
