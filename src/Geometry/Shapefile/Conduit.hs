@@ -1,24 +1,33 @@
-module Geometry.Shapefile.Conduit
+module Geometry.Shapefile.Conduit (shapefileConduit, shpDbfConduit)
 where
 
 import Data.ByteString (ByteString)
 import Data.Conduit
 import Data.Conduit.Internal (zipSources)
-import Data.Conduit.Combinators as CC
+import qualified Data.Conduit.Combinators as CC
 import Data.Conduit.Decoder
 import Data.Dbase.Conduit
 import Geometry.Shapefile.ReadShp
 import Geometry.Shapefile
 import Control.Monad.Trans.Resource
 import System.FilePath
+import Data.Binary.Get
+import qualified Data.ByteString.Lazy as BL
+import Control.Monad
+import Data.Maybe
 
-shapefileConduit :: Conduit ByteString (ResourceT IO) ShpRec
+shapefileConduit :: Conduit ByteString (ResourceT IO) (ShpHeader, ShpRec)
 shapefileConduit = do
-    CC.dropE 100
-    conduitDecoder getShpRec
+    hdr <- replicateM 100 CC.headE
+    conduitDecoder getShpRec =$= CC.map ((,) $ parseHeader hdr)
+    where 
+       parseHeader = runGet getShpHeader . BL.pack . catMaybes
 
-shpDbfConduit :: FilePath -> Source (ResourceT IO) (ShpRec, DbfRow)
-shpDbfConduit filePath = 
-   zipSources 
-      (sourceFile (filePath `replaceExtension` "shp") =$= shapefileConduit) 
-      (sourceFile (filePath `replaceExtension` "dbf") =$= dbfConduit)
+shpDbfConduit :: FilePath -> Source (ResourceT IO) (ShpHeader, ShpRec, DbfRow)
+shpDbfConduit filePath = zipSources shp dbf =$= CC.map (\((a, b), c) -> (a, b, c))
+   where 
+      shp = sourceWithExtension filePath "shp" =$= shapefileConduit
+      dbf = sourceWithExtension filePath "dbf" =$= dbfConduit
+
+sourceWithExtension :: FilePath -> String -> Source (ResourceT IO) ByteString
+sourceWithExtension filePath ext = CC.sourceFile (filePath `replaceExtension` ext)
