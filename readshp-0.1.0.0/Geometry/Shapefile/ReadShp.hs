@@ -38,7 +38,7 @@ readShpData = runGet $ do
 getShpHeader :: Get ShpHeader
 getShpHeader = do
   fc      <- getIntBE                 -- File code
-  when (fc /= 9994) (error "getShpHeader: Input file is not a SHP file")
+  when (fc /= 9994) (error $ "getShpHeader: Input file is not a SHP file: " ++ show fc)
   _       <- replicateM 5 getWord32be -- Unused data
   shpLen  <- getIntBE                 -- File length
   shpV    <- getIntLE                 -- Version (little-endian!)
