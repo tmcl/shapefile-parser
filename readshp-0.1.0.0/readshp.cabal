@@ -21,8 +21,8 @@ library
                        Geometry.Shapefile.MergeShpDbf,
                        Geometry.Shapefile.ReadDbf,
                        Geometry.Shapefile.ReadShp,
-                       Geometry.Shapefile.Types
-  other-modules:       Geometry.Shapefile.Internal
+                       Geometry.Shapefile.Types,
+                       Geometry.Shapefile.Internal
   build-depends:       base >=4.8 && <4.9,
                        binary,
                        bytestring,
