@@ -15,8 +15,9 @@ import Data.Binary.Get
 import qualified Data.ByteString.Lazy as BL
 import Control.Monad
 import Data.Maybe
+import Control.Monad.IO.Class
 
-shapefileConduit :: Conduit ByteString (ResourceT IO) (ShpHeader, ShpRec)
+shapefileConduit :: (MonadIO m, MonadThrow m) => Conduit ByteString m (ShpHeader, ShpRec)
 shapefileConduit = do
     hdr <- replicateM 100 CC.headE
     conduitDecoder getShpRec =$= CC.map ((,) $ parseHeader hdr)

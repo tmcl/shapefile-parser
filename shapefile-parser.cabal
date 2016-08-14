@@ -37,6 +37,8 @@ library
                        readshp ==0.1.1.0,
                        conduit-combinators ==1.0.*,
                        filepath ==1.4.*,
+                       transformers ==0.4.*,
+                       exceptions,
                        decoder-conduit ==0.0.1.2
                        
   hs-source-dirs:      src
