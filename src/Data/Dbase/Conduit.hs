@@ -11,8 +11,9 @@ import qualified Data.Conduit.Attoparsec as CA
 
 import Data.Dbase.Parser
 
+
 dbfConduit :: (MonadIO m, MonadThrow m) => ConduitM ByteString DbfRow m ()
 dbfConduit = do
    hdr <- CA.sinkParser parseDbfHeader
    columns <- CA.sinkParser . parseDbfColumns $ hdr
-   (CA.conduitParser . parseDbfRow) columns =$= CC.map snd
+   (CA.conduitParser . parseDbfRow) columns =$= CC.take (dbfRecordsLength hdr) =$= CC.map snd
