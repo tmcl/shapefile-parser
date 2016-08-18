@@ -95,6 +95,25 @@ data ShpRec =
     shpRecType     :: ShpType
   } deriving (Eq, Show)
 
+shpRecBBox :: ShpRec -> Maybe RecBBox
+shpRecBBox shpRec = recContentsBBox =<< shpRecContents shpRec
+
+recContentsBBox :: RecContents -> Maybe RecBBox
+recContentsBBox RecNull = Nothing
+recContentsBBox (RecPoint (x, y)) = Just $ RecBBox x x y y
+recContentsBBox (RecPointZ (x, y) _ _) = Just $ RecBBox x x y y
+recContentsBBox (RecPointM (x, y) _) = Just $ RecBBox x x y y
+recContentsBBox (RecMultiPoint b _ _) = Just b
+recContentsBBox (RecMultiPointM b _ _ _ _) = Just b
+recContentsBBox (RecMultiPointZ b _ _ _ _ _ _) = Just b
+recContentsBBox (RecPolyLine  b _ _ _ _) = Just b
+recContentsBBox (RecPolyLineM b _ _ _ _ _ _) = Just b
+recContentsBBox (RecPolyLineZ b _ _ _ _ _ _ _ _) = Just b
+recContentsBBox (RecPolygon  b _ _ _ _) = Just b
+recContentsBBox (RecPolygonM b _ _ _ _ _ _) = Just b
+recContentsBBox (RecPolygonZ b _ _ _ _ _ _ _ _) = Just b
+
+
 data RecContents =
     RecNull
   | RecPoint Point
@@ -181,6 +200,16 @@ data RecBBox =
     recYMin :: Double,
     recYMax :: Double
   } deriving (Eq, Show)
+
+
+toRecBB :: ShpBBox -> RecBBox
+toRecBB bb = RecBBox {
+      recXMin = shpXMin bb,
+      recXMax = shpXMax bb,
+      recYMin = shpYMin bb,
+      recYMax = shpYMax bb
+   }
+
 
 -- * DBF Types
 
