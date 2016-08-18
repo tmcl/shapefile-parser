@@ -5,6 +5,8 @@ module Data.Dbase.Parser (
    DbfRow(..), 
    parseDbfHeader, 
    parseDbfColumns, 
+   DbfField(..),
+   DbfHeader(..),
    parseDbfRow)
 where
 
@@ -48,9 +50,9 @@ data DbfColumnType
    deriving (Eq, Show)
 
 data DbfField 
-   = DbfFieldCharacter T.Text 
    | DbfFieldDate (Maybe Day)  
    | DbfFieldFloat ByteString 
+   = DbfFieldCharacter {dbfFieldCharacter :: T.Text}
    | DbfFieldLogical Bool
    | DbfFieldMemo ByteString
    | DbfFieldNumeric ByteString
