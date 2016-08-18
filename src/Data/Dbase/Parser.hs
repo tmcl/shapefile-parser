@@ -1,11 +1,11 @@
 module Data.Dbase.Parser (
-   parseDbf, 
-   Dbf (..), 
-   DbfColumn (..), 
-   DbfRow(..), 
-   parseDbfHeader, 
-   parseDbfColumns, 
+   parseDbf,
+   Dbf (..),
+   DbfColumn (..),
+   DbfRow(..),
    DbfField(..),
+   parseDbfHeader,
+   parseDbfColumns,
    DbfHeader(..),
    parseDbfRow)
 where
@@ -27,8 +27,8 @@ data Dbf = Dbf {
 }
    deriving (Show, Eq)
 
-data DbfHeader = DbfHeader { 
-   dbfRecordsLength :: Int,  
+data DbfHeader = DbfHeader {
+   dbfRecordsLength :: Int,
    dbfFirstRecordPosition :: Int
 }
    deriving (Show, Eq)
@@ -49,10 +49,10 @@ data DbfColumnType
    | DbfColumnTypeNumeric
    deriving (Eq, Show)
 
-data DbfField 
-   | DbfFieldDate (Maybe Day)  
-   | DbfFieldFloat ByteString 
+data DbfField
    = DbfFieldCharacter {dbfFieldCharacter :: T.Text}
+   | DbfFieldDate (Maybe Day)
+   | DbfFieldFloat ByteString
    | DbfFieldLogical Bool
    | DbfFieldMemo ByteString
    | DbfFieldNumeric ByteString
@@ -67,7 +67,7 @@ parseDbf = do
    columns <- parseDbfColumns hdr
    rows <- parseDbfRows hdr columns
    let r = Dbf hdr columns rows
-   return r 
+   return r
 
 parseDbfHeader :: Parser DbfHeader
 parseDbfHeader = do
@@ -78,12 +78,12 @@ parseDbfHeader = do
    return $ DbfHeader (fromIntegral len) (fromIntegral firstPosition)
 
 readColumnType :: ByteString -> DbfColumnType
-readColumnType "C" = DbfColumnTypeCharacter 
+readColumnType "C" = DbfColumnTypeCharacter
 readColumnType "F" = DbfColumnTypeFloat
-readColumnType "D" = DbfColumnTypeDate 
-readColumnType "N" = DbfColumnTypeNumeric 
-readColumnType "M" = DbfColumnTypeMemo 
-readColumnType "L" = DbfColumnTypeLogical 
+readColumnType "D" = DbfColumnTypeDate
+readColumnType "N" = DbfColumnTypeNumeric
+readColumnType "M" = DbfColumnTypeMemo
+readColumnType "L" = DbfColumnTypeLogical
 readColumnType l = error $ "Unknown column type" ++ (show l)
 
 parseDbfColumn :: Parser DbfColumn
@@ -102,7 +102,7 @@ parseDbfColumns header = do
    return r
 
 parseDbfRows :: DbfHeader -> [DbfColumn] -> Parser [DbfRow]
-parseDbfRows header columns 
+parseDbfRows header columns
    = count (fromIntegral . dbfRecordsLength $ header) (parseDbfRow columns)
 
 parseDbfRow :: [DbfColumn] -> Parser DbfRow
@@ -113,7 +113,7 @@ parseDbfRow columns = do
 
 parseDbfField :: DbfColumn -> Parser (DbfColumn, DbfField)
 parseDbfField column = fmap (\l -> (column, l)) (parseField (fromIntegral . dbfcLength $ column))
-   where 
+   where
       parseField len = case dbfcType column of
          DbfColumnTypeCharacter -> DbfFieldCharacter <$> parseUtf8 len
          DbfColumnTypeDate -> DbfFieldDate <$> parseDay len
