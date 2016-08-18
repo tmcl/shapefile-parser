@@ -10,9 +10,11 @@ import System.Environment
 import Text.Show.Pretty
 
 main :: IO ()
-main = getArgs >>= mapM_ (runResourceT . testConduit)
+main = do
+    [fp1, fp2] <- getArgs
+    runResourceT $ shpDbfSource Nothing fp1 >> shpDbfSource Nothing fp2 $$ CC.mapM_ (liftIO . putStrLn . ppShow)
 
 testConduit :: FilePath -> ResourceT IO ()
-testConduit filePath = 
-    shpDbfConduit filePath $$ 
+testConduit filePath =
+  shpDbfSource Nothing filePath $$
     CC.mapM_ (liftIO . putStrLn . ppShow)
