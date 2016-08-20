@@ -12,6 +12,7 @@ where
 
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Char8 as B8
 import Data.Attoparsec.ByteString
 import qualified Data.Attoparsec.ByteString as P
 import Data.Text (Text)
@@ -55,7 +56,7 @@ data DbfField
    | DbfFieldFloat ByteString
    | DbfFieldLogical Bool
    | DbfFieldMemo ByteString
-   | DbfFieldNumeric ByteString
+   | DbfFieldNumeric Int
    deriving (Eq, Show)
 
 data DbfRow = DbfRow [(DbfColumn, DbfField)]
@@ -120,7 +121,12 @@ parseDbfField column = fmap (\l -> (column, l)) (parseField (fromIntegral . dbfc
          DbfColumnTypeFloat -> DbfFieldFloat <$> P.take len
          DbfColumnTypeLogical -> DbfFieldLogical <$> parseBool len
          DbfColumnTypeMemo -> DbfFieldMemo <$> P.take len
-         DbfColumnTypeNumeric -> DbfFieldNumeric <$> P.take len
+         DbfColumnTypeNumeric -> DbfFieldNumeric <$> parseInt len
+
+parseInt :: Int -> Parser Int
+parseInt len = do
+   num <- P.take len
+   return $ floor (readBs (B8.filter (/= ' ') num) :: Double)
 
 readBs :: Read r => ByteString -> r
 readBs = read . T.unpack . decodeUtf8

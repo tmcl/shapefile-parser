@@ -1,4 +1,4 @@
-module Geometry.Shapefile.Conduit (shapefileConduit, shpDbfConduit, shpDbfSource, Shape, module Geometry.Shapefile, shapesByName, sourceFromStart, shapeFieldByColumnNameRule, matchTextDbfField, shapesFromDbfShpSource)
+module Geometry.Shapefile.Conduit (shapefileConduit, shpDbfConduit, shpDbfSource, Shape, module Geometry.Shapefile, shapesByName, sourceFromStart, shapeFieldByColumnNameRule, matchTextDbfField, shapesFromDbfShpSource, matchNumericDbfField)
 where
 
 import           Control.Monad
@@ -72,6 +72,13 @@ columnHasCharacter :: Text -> DbfField -> Bool
 columnHasCharacter c (DbfFieldCharacter d) = c == d
 columnHasCharacter _ _ = False
 
+columnHasNumber :: Int -> DbfField -> Bool
+columnHasNumber n (DbfFieldNumeric m) = n == m
+columnHasNumber _ _ = False
+
 matchTextDbfField :: (Text -> Bool) -> Text -> Shape -> Bool
 matchTextDbfField checkColumn t (_, _, s) = columnHasCharacter t (shapeFieldByColumnNameRule checkColumn s)
+
+matchNumericDbfField :: (Text -> Bool) -> Int -> Shape -> Bool
+matchNumericDbfField checkColumn n (_, _, s) = columnHasNumber n (shapeFieldByColumnNameRule checkColumn s)
 
