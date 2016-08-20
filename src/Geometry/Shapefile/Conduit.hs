@@ -18,6 +18,8 @@ import Data.Text (Text)
 import           Geometry.Shapefile
 import           System.FilePath
 import System.IO
+import Geometry.Shapefile.Types (toRecBB)
+import Data.List
 
 type Shape = (ShpHeader, ShpRec, DbfRow)
 
@@ -62,12 +64,11 @@ shapesFromDbfShpSource bbox shp dbf = shpDbfConduit bbox (sourceFromStart shp) (
 shapesByName :: FilePath -> (Text -> Bool) -> Text -> IO [Shape]
 shapesByName filePath columnRule fieldValue = runResourceT $ do
   shpDbfSource Nothing filePath
-    =$= CC.filter (matchTextDbfField columnRule fieldValue)
+    =$= CC.filter (matchTextDbfField fieldValue columnRule)
     $$ CC.sinkList
 
--- todo fixme: remove head, make it maybe
-shapeFieldByColumnNameRule :: (Text -> Bool) -> DbfRow -> DbfField
-shapeFieldByColumnNameRule rule (DbfRow c) = snd . head $ (filter (\(l,_) -> rule $ dbfcName l) c)
+shapeFieldByColumnNameRule :: (Text -> Bool) -> DbfRow -> Maybe DbfField
+shapeFieldByColumnNameRule rule (DbfRow c) = (snd . fst) <$> (uncons $ (filter (\(l,_) -> rule $ dbfcName l) c))
 
 columnHasCharacter :: Text -> DbfField -> Bool
 columnHasCharacter c (DbfFieldCharacter d) = c == d
@@ -77,9 +78,13 @@ columnHasNumber :: Int -> DbfField -> Bool
 columnHasNumber n (DbfFieldNumeric m) = n == m
 columnHasNumber _ _ = False
 
-matchTextDbfField :: (Text -> Bool) -> Text -> Shape -> Bool
-matchTextDbfField checkColumn t (_, _, s) = columnHasCharacter t (shapeFieldByColumnNameRule checkColumn s)
+matchTextDbfField :: Text -> (Text -> Bool) -> Shape -> Bool
+matchTextDbfField target = matchDbfField (columnHasCharacter target)
 
-matchNumericDbfField :: (Text -> Bool) -> Int -> Shape -> Bool
-matchNumericDbfField checkColumn n (_, _, s) = columnHasNumber n (shapeFieldByColumnNameRule checkColumn s)
+matchNumericDbfField :: Int -> (Text -> Bool) -> Shape -> Bool
+matchNumericDbfField target = matchDbfField (columnHasNumber target)
+
+matchDbfField :: (DbfField -> Bool) -> (Text -> Bool) -> Shape -> Bool
+matchDbfField checkField checkColumn (_, _, s) = 
+	maybe False checkField (shapeFieldByColumnNameRule checkColumn s)
 
