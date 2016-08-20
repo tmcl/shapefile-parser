@@ -86,5 +86,8 @@ matchNumericDbfField target = matchDbfField (columnHasNumber target)
 
 matchDbfField :: (DbfField -> Bool) -> (Text -> Bool) -> Shape -> Bool
 matchDbfField checkField checkColumn (_, _, s) = 
-	maybe False checkField (shapeFieldByColumnNameRule checkColumn s)
+	maybe 
+		(error $ "missing value in " ++ show s) 
+		checkField 
+		(shapeFieldByColumnNameRule checkColumn s)
 
