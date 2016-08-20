@@ -65,8 +65,9 @@ shapesByName filePath columnRule fieldValue = runResourceT $ do
     =$= CC.filter (matchTextDbfField columnRule fieldValue)
     $$ CC.sinkList
 
+-- todo fixme: remove head, make it maybe
 shapeFieldByColumnNameRule :: (Text -> Bool) -> DbfRow -> DbfField
-shapeFieldByColumnNameRule rule (DbfRow c) = snd . head $ filter (\(l,_) -> rule $ dbfcName l) c
+shapeFieldByColumnNameRule rule (DbfRow c) = snd . head $ (filter (\(l,_) -> rule $ dbfcName l) c)
 
 columnHasCharacter :: Text -> DbfField -> Bool
 columnHasCharacter c (DbfFieldCharacter d) = c == d

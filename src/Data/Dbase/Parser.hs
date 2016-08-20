@@ -150,3 +150,4 @@ parseBool len = do
    logical <- anyWord8
    _ <- P.take (len - 1)
    return $ inClass "YyTt" logical
+
