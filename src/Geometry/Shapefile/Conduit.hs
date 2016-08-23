@@ -18,7 +18,6 @@ import Data.Text (Text)
 import           Geometry.Shapefile
 import           System.FilePath
 import System.IO
-import Geometry.Shapefile.Types (toRecBB)
 import Data.List
 
 type Shape = (ShpHeader, ShpRec, DbfRow)
@@ -47,7 +46,7 @@ boxesOverlap b1 b2 =  recXMin b1 < recXMax b2 && recXMax b1 > recXMin b2 &&
 shpDbfConduit :: (MonadIO m, MonadThrow m) => Maybe RecBBox -> Source m ByteString -> Source m ByteString -> Source m (ShpHeader, ShpRec, DbfRow)
 shpDbfConduit bbox shp dbf = zipSources (shp =$= shapefileConduit bbox) (dbf =$= dbfConduit)
   =$= CC.map (\((a, b), c) -> (a, b, c))
-  =$= CC.filter (\(a, b, c) -> maybeBoxesOverlap (shpRecBBox b) bbox)
+  =$= CC.filter (\(_, b, _) -> maybeBoxesOverlap (shpRecBBox b) bbox)
 
 shpDbfSource :: Maybe RecBBox -> FilePath -> Source (ResourceT IO) Shape
 shpDbfSource bbox filePath = shpDbfConduit bbox shp dbf
@@ -86,8 +85,8 @@ matchNumericDbfField target = matchDbfField (columnHasNumber target)
 
 matchDbfField :: (DbfField -> Bool) -> (Text -> Bool) -> Shape -> Bool
 matchDbfField checkField checkColumn (_, _, s) = 
-	maybe 
-		(error $ "missing value in " ++ show s) 
-		checkField 
-		(shapeFieldByColumnNameRule checkColumn s)
+   maybe 
+      (error $ "missing value in " ++ show s) 
+      checkField 
+      (shapeFieldByColumnNameRule checkColumn s)
 
